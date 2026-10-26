@@ -1,0 +1,550 @@
+g<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gia Phả Trực Tuyến - 10 Thế Hệ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-amber-800 via-amber-900 to-stone-900 text-white shadow-xl py-6 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide uppercase text-amber-200">
+                    <i class="fas fa-book-open mr-2"></i> GIA PHẢ TRỰC TUYẾN
+                </h1>
+                <p class="text-amber-100/90 text-sm mt-1 italic font-medium">
+                    Bố: Lê Anh Tuấn &bull; Mẹ: Nguyễn Thị Hạnh &mdash; Cùng các con ghi chép để tưởng nhớ gia tiên ông bà!
+                </p>
+            </div>
+            
+            <!-- Switch Branch Tabs -->
+            <div class="bg-amber-950/60 p-1.5 rounded-xl border border-amber-700/50 flex shadow-inner">
+                <button onclick="switchBranch('noi')" id="btnNoi" class="px-5 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow">
+                    <i class="fas fa-home"></i> Bên Nội (Họ Lê)
+                </button>
+                <button onclick="switchBranch('ngoai')" id="btnNgoai" class="px-5 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white">
+                    <i class="fas fa-seedling"></i> Bên Ngoại (Họ Nguyễn)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
+        
+        <!-- Action Toolbar -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-grow md:w-80">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Tìm kiếm theo tên, nguyên quán..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                
+                <select id="genFilter" onchange="handleFilter()" class="py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                    <option value="">Tất cả thế hệ (1-10)</option>
+                    <script>
+                        for(let i=1; i<=10; i++) {
+                            document.write(`<option value="${i}">Thế hệ thứ ${i}</option>`);
+                        }
+                    </script>
+                </select>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end">
+                <button onclick="openModal()" class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition flex items-center gap-2">
+                    <i class="fas fa-user-plus"></i> Thêm thành viên
+                </button>
+                <button onclick="exportData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5" title="Xuất file JSON">
+                    <i class="fas fa-download"></i> Xuất dữ liệu
+                </button>
+                <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 cursor-pointer" title="Nhập file JSON">
+                    <i class="fas fa-upload"></i> Nhập dữ liệu
+                    <input type="file" id="importFile" onchange="importData(event)" accept=".json" class="hidden">
+                </label>
+                <button onclick="resetDefaultData()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-2 rounded-xl text-sm font-medium transition" title="Khôi phục dữ liệu mẫu">
+                    <i class="fas fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Branch Info Banner -->
+        <div id="branchBanner" class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-medium flex items-center justify-between">
+            <div>
+                <span id="currentBranchTitle" class="text-lg font-bold">Gia phả Gia đình bên Nội (Họ Lê)</span>
+                <p id="currentBranchDesc" class="text-xs text-amber-700 mt-0.5">Lưu giữ cội nguồn, gắn kết các thế hệ dòng họ Lê.</p>
+            </div>
+            <div class="text-right text-sm">
+                Tổng số thành viên: <span id="totalMembersCount" class="font-bold">0</span>
+            </div>
+        </div>
+
+        <!-- Generations Display Area -->
+        <div id="familyTreeContainer" class="space-y-8">
+            <!-- Dynamic content injected here -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-sm text-slate-500 mt-12">
+        <p>Gia Phả Trực Tuyến &copy; 2026 &bull; Xây dựng để lưu truyền đời sau.</p>
+    </footer>
+
+    <!-- Add/Edit Modal -->
+    <div id="memberModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <h3 id="modalTitle" class="text-xl font-bold text-slate-800">Thêm thành viên mới</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg">
+                    <i class="fas fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="memberForm" onsubmit="saveMember(event)" class="p-6 space-y-4">
+                <input type="hidden" id="memberId">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Họ và tên *</label>
+                        <input type="text" id="memberName" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ví dụ: Lê Văn A">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Giới tính *</label>
+                        <select id="memberGender" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="Nam">Nam (Xanh da trời)</option>
+                            <option value="Nữ">Nữ (Hồng)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Thế hệ thứ *</label>
+                        <select id="memberGen" onchange="updateParentOptions()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <script>
+                                for(let i=1; i<=10; i++) {
+                                    document.write(`<option value="${i}">Thế hệ ${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Con của ông/bà (Thế hệ trước)</label>
+                        <select id="memberParent" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="">-- Không chọn / Là gốc thế hệ --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Ngày tháng năm sinh -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Ngày tháng năm sinh</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="number" id="memberBirthDay" min="1" max="31" placeholder="Ngày (1-31)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <input type="number" id="memberBirthMonth" min="1" max="12" placeholder="Tháng (1-12)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <input type="number" id="memberBirthYear" placeholder="Năm (VD: 1950)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Nếu không nhớ rõ ngày/tháng, bạn có thể chỉ nhập Năm sinh.</p>
+                </div>
+
+                <!-- Ngày tháng năm mất (Giỗ kị) -->
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                    <label class="block text-sm font-semibold text-slate-700">Ngày tháng năm mất (Ngày giỗ kị)</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="number" id="memberDeathDay" min="1" max="31" placeholder="Ngày giỗ" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+                        <input type="number" id="memberDeathMonth" min="1" max="12" placeholder="Tháng giỗ" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+                        <input type="number" id="memberDeathYear" placeholder="Năm mất" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+                    </div>
+                    <p class="text-[11px] text-slate-400">Để trống nếu còn sống. Nhập ngày/tháng mất để con cháu biết ngày cúng giỗ.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Vợ / Chồng</label>
+                        <input type="text" id="memberSpouse" placeholder="Họ tên vợ hoặc chồng" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nguyên quán</label>
+                        <input type="text" id="memberHometown" placeholder="Ví dụ: Xã X, Huyện Y, Tỉnh Z" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Nơi chôn cất (Nơi an nghỉ)</label>
+                    <input type="text" id="memberBurial" placeholder="Ví dụ: Nghĩa trang quê nhà, Hoa viên X..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Link ảnh đại diện (URL từ bên ngoài)</label>
+                    <input type="url" id="memberAvatar" placeholder="https://example.com/avatar.jpg" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Ghi chú và mô tả (Tiểu sử, công đức...)</label>
+                    <textarea id="memberNote" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Kỷ niệm, tính cách, quá trình công tác hoặc lời dặn dò cho con cháu..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-sm font-semibold shadow transition">Lưu thông tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        let currentBranch = 'noi'; // 'noi' or 'ngoai'
+        
+        const defaultDataNoi = [
+            { id: '1', name: 'Lê Trường Toán ', gender: 'Nam', generation: 1, parentId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '7', deathMonth: '11', deathYear: '', spouse: 'N', hometown: 'Hà Nội', burial: 'Nghĩa trang dòng họ Lê', avatar: '', note: 'Cụ tổ dòng họ Lê tại quê nhà.' },
+            { id: '2', name: 'Lê Anh Tuấn', gender: 'Nam', generation: 2, parentId: '1', birthDay: '10', birthMonth: '8', birthYear: '1955', deathDay: '', deathMonth: '', deathYear: '', spouse: 'Nguyễn Thị Hạnh', hometown: 'Hà Nội', burial: '', avatar: '', note: 'Trưởng nam, tiếp quản nhà thờ tổ.' }
+        ];
+
+        const defaultDataNgoai = [
+            { id: 'n1', name: 'Nguyễn Văn Đạo', gender: 'Nam', generation: 1, parentId: '', birthDay: '1', birthMonth: '1', birthYear: '1925', deathDay: '15', deathMonth: '8', deathYear: '2001', spouse: 'Trần Thị Mai', hometown: 'Nam Định', burial: 'Nghĩa trang xã', avatar: '', note: 'Cụ ông bên ngoại.' }
+        ];
+
+        function getStorageKey() {
+            return currentBranch === 'noi' ? 'family_tree_data_noi' : 'family_tree_data_ngoai';
+        }
+
+        function loadData() {
+            const data = localStorage.getItem(getStorageKey());
+            if (!data) {
+                const initial = currentBranch === 'noi' ? defaultDataNoi : defaultDataNgoai;
+                localStorage.setItem(getStorageKey(), JSON.stringify(initial));
+                return initial;
+            }
+            return JSON.parse(data);
+        }
+
+        function saveData(data) {
+            localStorage.setItem(getStorageKey(), JSON.stringify(data));
+        }
+
+        function switchBranch(branch) {
+            currentBranch = branch;
+            const btnNoi = document.getElementById('btnNoi');
+            const btnNgoai = document.getElementById('btnNgoai');
+            const title = document.getElementById('currentBranchTitle');
+            const desc = document.getElementById('currentBranchDesc');
+
+            if (branch === 'noi') {
+                btnNoi.className = "px-5 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow";
+                btnNgoai.className = "px-5 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white";
+                title.textContent = "Gia phả Gia đình bên Nội (Họ Lê)";
+                desc.textContent = "Lưu giữ cội nguồn, gắn kết các thế hệ dòng họ Lê.";
+            } else {
+                btnNgoai.className = "px-5 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow";
+                btnNoi.className = "px-5 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white";
+                title.textContent = "Gia phả Gia đình bên Ngoại (Họ Nguyễn)";
+                desc.textContent = "Lưu giữ cội nguồn, gắn kết các thế hệ dòng họ Nguyễn.";
+            }
+            renderTree();
+        }
+
+        // Helper format ngày tháng
+        function formatDateStr(day, month, year) {
+            const parts = [];
+            if (day) parts.push(`Ngày ${day}`);
+            if (month) parts.push(`Tháng ${month}`);
+            if (year) parts.push(year);
+            return parts.length > 0 ? parts.join('/') : '---';
+        }
+
+        function renderTree() {
+            const container = document.getElementById('familyTreeContainer');
+            const data = loadData();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const genFilter = document.getElementById('genFilter').value;
+
+            container.innerHTML = '';
+            document.getElementById('totalMembersCount').textContent = data.length;
+
+            for (let gen = 1; gen <= 10; gen++) {
+                if (genFilter && parseInt(genFilter) !== gen) continue;
+
+                const membersInGen = data.filter(m => {
+                    const matchGen = m.generation === gen;
+                    const matchSearch = m.name.toLowerCase().includes(searchTerm) || (m.hometown && m.hometown.toLowerCase().includes(searchTerm));
+                    return matchGen && matchSearch;
+                });
+
+                if (genFilter && membersInGen.length === 0) continue;
+                if (!genFilter && searchTerm && membersInGen.length === 0) continue;
+
+                const genSection = document.createElement('div');
+                genSection.className = "bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden";
+                
+                let membersHtml = '';
+                if (membersInGen.length === 0) {
+                    membersHtml = `<div class="p-6 text-center text-slate-400 italic text-sm">Chưa có thành viên nào trong thế hệ này.</div>`;
+                } else {
+                    membersHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">`;
+                    membersInGen.forEach(m => {
+                        const isMale = m.gender === 'Nam';
+                        const isDeceased = (m.deathYear && m.deathYear.trim() !== '') || (m.deathDay && m.deathDay.trim() !== '') || (m.deathMonth && m.deathMonth.trim() !== '');
+                        
+                        const parentObj = data.find(p => p.id === m.parentId);
+                        const parentName = parentObj ? parentObj.name : null;
+
+                        // Theme màu sắc theo giới tính
+                        const cardBorder = isMale 
+                            ? 'border-sky-300 hover:border-sky-500 bg-sky-50/20' 
+                            : 'border-pink-300 hover:border-pink-500 bg-pink-50/20';
+                        
+                        const textColor = isMale ? 'text-sky-900' : 'text-pink-900';
+                        const iconColor = isMale ? 'text-sky-600' : 'text-pink-600';
+                        const badgeBg = isMale ? 'bg-sky-100 text-sky-700' : 'bg-pink-100 text-pink-700';
+                        
+                        const statusBadge = isDeceased 
+                            ? '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600"><i class="fas fa-cross mr-1"></i> Đã mất</span>' 
+                            : '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700"><i class="fas fa-heartbeat mr-1"></i> Còn sống</span>';
+
+                        const avatarContent = m.avatar 
+                            ? `<img src="${m.avatar}" class="w-14 h-14 rounded-full object-cover border-2 ${isMale ? 'border-sky-400' : 'border-pink-400'} shrink-0 shadow-sm">`
+                            : `<div class="w-14 h-14 rounded-full ${isMale ? 'bg-sky-100 text-sky-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center font-bold text-xl shrink-0 shadow-sm">
+                                   <i class="fas ${isMale ? 'fa-mars' : 'fa-venus'}"></i>
+                               </div>`;
+
+                        const birthStr = formatDateStr(m.birthDay, m.birthMonth, m.birthYear);
+                        const deathStr = isDeceased ? formatDateStr(m.deathDay, m.deathMonth, m.deathYear) : 'Nay';
+                        
+                        const giokhiText = (isDeceased && (m.deathDay || m.deathMonth)) 
+                            ? `<div class="flex items-center gap-1.5 font-semibold text-rose-600"><i class="fas fa-ribbon w-4"></i><span>Ngày giỗ kị: Ngày ${m.deathDay || '??'} tháng ${m.deathMonth || '??'} (ÂL/ĐL)</span></div>` 
+                            : '';
+
+                        membersHtml += `
+                            <div class="rounded-2xl border ${cardBorder} p-5 shadow-sm transition-all relative group flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-start justify-between gap-3 mb-3">
+                                        <div class="flex items-center gap-3">
+                                            ${avatarContent}
+                                            <div>
+                                                <h4 class="font-bold text-base ${textColor}">${m.name}</h4>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${badgeBg}">${m.gender}</span>
+                                                    ${statusBadge}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-1.5 text-xs ${textColor} border-t border-slate-100 pt-3 mt-3">
+                                        ${parentName ? `<div class="flex items-center gap-1.5"><i class="fas fa-user-shield ${iconColor} w-4"></i><span>Con của: <strong>${parentName}</strong></span></div>` : ''}
+                                        <div class="flex items-center gap-1.5"><i class="fas fa-cake-candles ${iconColor} w-4"></i><span>Ngày sinh: <strong>${birthStr}</strong></span></div>
+                                        ${isDeceased ? `<div class="flex items-center gap-1.5"><i class="fas fa-calendar-xmark ${iconColor} w-4"></i><span>Năm mất: <strong>${deathStr}</strong></span></div>` : ''}
+                                        ${giokhiText}
+                                        ${m.spouse ? `<div class="flex items-center gap-1.5"><i class="fas fa-ring ${iconColor} w-4"></i><span>Vợ/Chồng: <strong>${m.spouse}</strong></span></div>` : ''}
+                                        ${m.hometown ? `<div class="flex items-center gap-1.5"><i class="fas fa-map-pin ${iconColor} w-4"></i><span>Nguyên quán: ${m.hometown}</span></div>` : ''}
+                                        ${isDeceased && m.burial ? `<div class="flex items-center gap-1.5"><i class="fas fa-location-dot ${iconColor} w-4"></i><span>Nơi chôn cất: ${m.burial}</span></div>` : ''}
+                                        ${m.note ? `<div class="mt-2 p-2.5 bg-amber-50/70 rounded-xl text-slate-700 italic border border-amber-100">"${m.note}"</div>` : ''}
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="editMember('${m.id}')" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                                        <i class="fas fa-pen text-[10px]"></i> Sửa
+                                    </button>
+                                    <button onclick="deleteMember('${m.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                                        <i class="fas fa-trash text-[10px]"></i> Xóa
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    membersHtml += `</div>`;
+                }
+
+                genSection.innerHTML = `
+                    <div class="bg-gradient-to-r from-amber-800 to-amber-900 px-6 py-3.5 text-white flex justify-between items-center">
+                        <h3 class="font-bold text-base flex items-center gap-2">
+                            <i class="fas fa-sitemap text-amber-300"></i> Thế hệ thứ ${gen}
+                        </h3>
+                        <span class="text-xs bg-amber-950/60 px-3 py-1 rounded-full text-amber-200 border border-amber-700/50">
+                            ${membersInGen.length} thành viên
+                        </span>
+                    </div>
+                    ${membersHtml}
+                `;
+                container.appendChild(genSection);
+            }
+        }
+
+        // Modal Controls
+        function openModal(id = null) {
+            document.getElementById('memberModal').classList.remove('hidden');
+            document.getElementById('memberForm').reset();
+            document.getElementById('memberId').value = '';
+            
+            if (id) {
+                document.getElementById('modalTitle').textContent = 'Chỉnh sửa thông tin thành viên';
+                const data = loadData();
+                const m = data.find(item => item.id === id);
+                if (m) {
+                    document.getElementById('memberId').value = m.id;
+                    document.getElementById('memberName').value = m.name;
+                    document.getElementById('memberGender').value = m.gender;
+                    document.getElementById('memberGen').value = m.generation;
+                    updateParentOptions();
+                    document.getElementById('memberParent').value = m.parentId || '';
+                    document.getElementById('memberBirthDay').value = m.birthDay || '';
+                    document.getElementById('memberBirthMonth').value = m.birthMonth || '';
+                    document.getElementById('memberBirthYear').value = m.birthYear || '';
+                    document.getElementById('memberDeathDay').value = m.deathDay || '';
+                    document.getElementById('memberDeathMonth').value = m.deathMonth || '';
+                    document.getElementById('memberDeathYear').value = m.deathYear || '';
+                    document.getElementById('memberSpouse').value = m.spouse || '';
+                    document.getElementById('memberHometown').value = m.hometown || '';
+                    document.getElementById('memberBurial').value = m.burial || '';
+                    document.getElementById('memberAvatar').value = m.avatar || '';
+                    document.getElementById('memberNote').value = m.note || '';
+                }
+            } else {
+                document.getElementById('modalTitle').textContent = 'Thêm thành viên mới';
+                updateParentOptions();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('memberModal').classList.add('hidden');
+        }
+
+        function updateParentOptions() {
+            const gen = parseInt(document.getElementById('memberGen').value);
+            const parentSelect = document.getElementById('memberParent');
+            const currentId = document.getElementById('memberId').value;
+            const data = loadData();
+
+            parentSelect.innerHTML = '<option value="">-- Không chọn / Là gốc thế hệ --</option>';
+
+            if (gen > 1) {
+                const prevGenMembers = data.filter(m => m.generation === gen - 1 && m.id !== currentId);
+                prevGenMembers.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    opt.textContent = `${m.name} (Thế hệ ${m.generation} - ${m.gender})`;
+                    parentSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function saveMember(e) {
+            e.preventDefault();
+            const id = document.getElementById('memberId').value;
+            const name = document.getElementById('memberName').value;
+            const gender = document.getElementById('memberGender').value;
+            const generation = parseInt(document.getElementById('memberGen').value);
+            const parentId = document.getElementById('memberParent').value;
+            const birthDay = document.getElementById('memberBirthDay').value;
+            const birthMonth = document.getElementById('memberBirthMonth').value;
+            const birthYear = document.getElementById('memberBirthYear').value;
+            const deathDay = document.getElementById('memberDeathDay').value;
+            const deathMonth = document.getElementById('memberDeathMonth').value;
+            const deathYear = document.getElementById('memberDeathYear').value;
+            const spouse = document.getElementById('memberSpouse').value;
+            const hometown = document.getElementById('memberHometown').value;
+            const burial = document.getElementById('memberBurial').value;
+            const avatar = document.getElementById('memberAvatar').value;
+            const note = document.getElementById('memberNote').value;
+
+            let data = loadData();
+
+            if (id) {
+                data = data.map(item => item.id === id ? { 
+                    ...item, name, gender, generation, parentId, 
+                    birthDay, birthMonth, birthYear, 
+                    deathDay, deathMonth, deathYear, 
+                    spouse, hometown, burial, avatar, note 
+                } : item);
+            } else {
+                const newMember = {
+                    id: Date.now().toString(),
+                    name, gender, generation, parentId, 
+                    birthDay, birthMonth, birthYear, 
+                    deathDay, deathMonth, deathYear, 
+                    spouse, hometown, burial, avatar, note
+                };
+                data.push(newMember);
+            }
+
+            saveData(data);
+            closeModal();
+            renderTree();
+        }
+
+        function editMember(id) {
+            openModal(id);
+        }
+
+        function deleteMember(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa thành viên này khỏi gia phả không?')) {
+                let data = loadData();
+                data = data.filter(item => item.id !== id);
+                saveData(data);
+                renderTree();
+            }
+        }
+
+        function handleSearch() { renderTree(); }
+        function handleFilter() { renderTree(); }
+
+        function exportData() {
+            const data = loadData();
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gia_pha_${currentBranch}_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        saveData(importedData);
+                        renderTree();
+                        alert('Nhập dữ liệu gia phả thành công!');
+                    } else {
+                        alert('Tệp dữ liệu không hợp lệ!');
+                    }
+                } catch (err) {
+                    alert('Lỗi đọc tệp JSON!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetDefaultData() {
+            if (confirm('Bạn có muốn khôi phục dữ liệu mẫu ban đầu của dòng họ này không? Các thay đổi hiện tại sẽ bị ghi đè.')) {
+                const initial = currentBranch === 'noi' ? defaultDataNoi : defaultDataNgoai;
+                localStorage.setItem(getStorageKey(), JSON.stringify(initial));
+                renderTree();
+            }
+        }
+
+        window.onload = function() {
+            renderTree();
+        };
+    </script>
+</body>
+</html>
