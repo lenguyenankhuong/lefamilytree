@@ -1,4 +1,4 @@
-g<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -19,7 +19,7 @@ g<!DOCTYPE html>
     <header class="bg-gradient-to-r from-amber-800 via-amber-900 to-stone-900 text-white shadow-xl py-6 px-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="text-center md:text-left">
-                <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide uppercase text-amber-200">
+                <h1 class="text-2xl md:text-4xl font-extrabold tracking-wide uppercase text-amber-200">
                     <i class="fas fa-book-open mr-2"></i> GIA PHẢ TRỰC TUYẾN
                 </h1>
                 <p class="text-amber-100/90 text-sm mt-1 italic font-medium">
@@ -29,10 +29,10 @@ g<!DOCTYPE html>
             
             <!-- Switch Branch Tabs -->
             <div class="bg-amber-950/60 p-1.5 rounded-xl border border-amber-700/50 flex shadow-inner">
-                <button onclick="switchBranch('noi')" id="btnNoi" class="px-5 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow">
+                <button onclick="switchBranch('noi')" id="btnNoi" class="px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow">
                     <i class="fas fa-home"></i> Bên Nội (Họ Lê)
                 </button>
-                <button onclick="switchBranch('ngoai')" id="btnNgoai" class="px-5 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white">
+                <button onclick="switchBranch('ngoai')" id="btnNgoai" class="px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white">
                     <i class="fas fa-seedling"></i> Bên Ngoại (Họ Nguyễn)
                 </button>
             </div>
@@ -128,7 +128,7 @@ g<!DOCTYPE html>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Thế hệ thứ *</label>
                         <select id="memberGen" onchange="updateParentOptions()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
@@ -140,9 +140,15 @@ g<!DOCTYPE html>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Con của ông/bà (Thế hệ trước)</label>
-                        <select id="memberParent" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <option value="">-- Không chọn / Là gốc thế hệ --</option>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Con của Cha (Lựa chọn)</label>
+                        <select id="memberFather" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="">-- Chọn Cha (Thế hệ trước) --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Con của Mẹ (Lựa chọn)</label>
+                        <select id="memberMother" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="">-- Chọn Mẹ (Thế hệ trước) --</option>
                         </select>
                     </div>
                 </div>
@@ -155,34 +161,57 @@ g<!DOCTYPE html>
                         <input type="number" id="memberBirthMonth" min="1" max="12" placeholder="Tháng (1-12)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                         <input type="number" id="memberBirthYear" placeholder="Năm (VD: 1950)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1">Nếu không nhớ rõ ngày/tháng, bạn có thể chỉ nhập Năm sinh.</p>
                 </div>
 
-                <!-- Ngày tháng năm mất (Giỗ kị) -->
+                <!-- Ngày tháng năm mất -->
                 <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <label class="block text-sm font-semibold text-slate-700">Ngày tháng năm mất (Ngày giỗ kị)</label>
+                    <label class="block text-sm font-semibold text-slate-700">Ngày tháng năm mất (Nhập vào thì Status sẽ là "Đã mất")</label>
                     <div class="grid grid-cols-3 gap-2">
                         <input type="number" id="memberDeathDay" min="1" max="31" placeholder="Ngày giỗ" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
                         <input type="number" id="memberDeathMonth" min="1" max="12" placeholder="Tháng giỗ" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
                         <input type="number" id="memberDeathYear" placeholder="Năm mất" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
                     </div>
-                    <p class="text-[11px] text-slate-400">Để trống nếu còn sống. Nhập ngày/tháng mất để con cháu biết ngày cúng giỗ.</p>
+                    <p class="text-[11px] text-slate-400">Để trống nếu còn sống (Status sẽ hiển thị "Còn sống").</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Vợ / Chồng</label>
-                        <input type="text" id="memberSpouse" placeholder="Họ tên vợ hoặc chồng" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    </div>
-                    <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nguyên quán</label>
                         <input type="text" id="memberHometown" placeholder="Ví dụ: Xã X, Huyện Y, Tỉnh Z" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nơi chôn cất (Chỉ hiện nếu Đã mất)</label>
+                        <input type="text" id="memberBurial" placeholder="Ví dụ: Nghĩa trang quê nhà, Hoa viên X..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Nơi chôn cất (Nơi an nghỉ)</label>
-                    <input type="text" id="memberBurial" placeholder="Ví dụ: Nghĩa trang quê nhà, Hoa viên X..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <!-- THÔNG TIN CHI TIẾT VỢ / CHỒNG -->
+                <div class="p-4 bg-amber-50/50 border border-amber-200/80 rounded-xl space-y-3">
+                    <h4 class="font-bold text-amber-900 text-sm flex items-center gap-1.5"><i class="fas fa-heart text-rose-500"></i> Thông tin Vợ / Chồng</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Họ tên Vợ / Chồng</label>
+                        <input type="text" id="memberSpouse" placeholder="Ví dụ: Nguyễn Thị B" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Năm sinh (Vợ/Chồng)</label>
+                            <input type="text" id="spouseBirthYear" placeholder="Năm sinh Vợ/Chồng" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Năm mất (Vợ/Chồng nếu có)</label>
+                            <input type="text" id="spouseDeathYear" placeholder="Để trống nếu còn sống" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nguyên quán Vợ/Chồng</label>
+                            <input type="text" id="spouseHometown" placeholder="Quê quán Vợ/Chồng" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nơi chôn cất Vợ/Chồng (nếu mất)</label>
+                            <input type="text" id="spouseBurial" placeholder="Nơi an nghỉ Vợ/Chồng" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -208,12 +237,115 @@ g<!DOCTYPE html>
         let currentBranch = 'noi'; // 'noi' or 'ngoai'
         
         const defaultDataNoi = [
-            { id: '1', name: 'Lê Trường Toán ', gender: 'Nam', generation: 1, parentId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '7', deathMonth: '11', deathYear: '', spouse: 'N', hometown: 'Hà Nội', burial: 'Nghĩa trang dòng họ Lê', avatar: '', note: 'Cụ tổ dòng họ Lê tại quê nhà.' },
-            { id: '2', name: 'Lê Anh Tuấn', gender: 'Nam', generation: 2, parentId: '1', birthDay: '10', birthMonth: '8', birthYear: '1955', deathDay: '', deathMonth: '', deathYear: '', spouse: 'Nguyễn Thị Hạnh', hometown: 'Hà Nội', burial: '', avatar: '', note: 'Trưởng nam, tiếp quản nhà thờ tổ.' }
+            // --- THẾ HỆ 1 ---
+            { id: '1_1', name: 'Lê Trường Toán', gender: 'Nam', generation: 1, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '1_2', name: 'Nguyễn Thị Tùng (con dâu)', gender: 'Nữ', generation: 1, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+
+            // --- THẾ HỆ 2 ---
+            { id: '2_1', name: 'Lê Thị Hữu Vị Vô Danh', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_2', name: 'Lê Thị Thẩm', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_3', name: 'Nguyễn Tư (con rể)', gender: 'Nam', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_4', name: 'Lê Trường Bút', gender: 'Nam', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_5', name: 'Trần Thị Bạo (con dâu - chánh thất)', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_6', name: 'Nguyễn Thị Thỉu (con dâu - kế thất)', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_7', name: 'Lê Trường Trâm (Lê Trường Đồng)', gender: 'Nam', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_8', name: 'Nguyễn Thị Lan (bà Đồng) (con dâu)', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_9', name: 'Lê Trường Hốt (Lê Trường Phú)', gender: 'Nam', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_10', name: 'Lê Trường Quản (Lê Quảng)', gender: 'Nam', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_11', name: 'Tạ Thị Đăng (con dâu - chánh thất)', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_12', name: 'Hoàng Thị Sâm (con dâu - kế thất)', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_13', name: 'Hoàng Thị Dợ (con dâu - tam thất)', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_14', name: 'Lê Thị Gái', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_15', name: 'Lê Thị Cúc', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_16', name: 'Lê Thị Hường', gender: 'Nữ', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '2_17', name: 'Trần Xuân Hồng (con rể)', gender: 'Nam', generation: 2, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+
+            // --- THẾ HỆ 3 ---
+            { id: '3_1', name: 'Lê Thị Hòa', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_2', name: 'Lê Thị Cầm', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_3', name: 'Lê Trường Thành', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_4', name: 'Đoàn Thị Thanh Trúc (con dâu)', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_5', name: 'Lê Trường Thọ', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_6', name: 'Lê Thị Minh Cơ', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_7', name: 'Chồng cô Cơ (con rể)', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_8', name: 'Lê Trường Bản', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_9', name: 'Lê Thị Thư', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_10', name: 'Lê Công Thành', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_11', name: 'Vợ ông Thành (con dâu)', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_12', name: 'Lê Thị Cảnh', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_13', name: 'Lê Thị Thương', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_14', name: 'Lê Trường Báu', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_15', name: 'Lê Trường Hữu Vị Vô Danh', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_16', name: 'Lê Thị Đoàn Viên', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_17', name: 'Bùi Trung Tá (con rể)', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_18', name: 'Lê Huyết sảo (con bà nội lớn)', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_19', name: 'Lê Huyết sảo (con bà nội)', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_20', name: 'Lê Thị Nghĩa', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_21', name: 'Bác Dậu (con rể)', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_22', name: 'Lê Anh Tuấn', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_23', name: 'Nguyễn Thị Hạnh (con dâu)', gender: 'Nữ', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '3_24', name: 'Lê Anh Dũng', gender: 'Nam', generation: 3, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+
+            // --- THẾ HỆ 4 ---
+            { id: '4_1', name: 'Lê Thị vô danh', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_2', name: 'Lê Đoàn Trường Tín', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_3', name: 'Chị Hòa', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_4', name: 'Lê Trường Huyết sảo', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_5', name: 'Chị Nhẫn', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_6', name: 'Chồng chị Nhẫn', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_7', name: 'Chị Phúc', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_8', name: 'Chồng chị Phúc', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_9', name: 'Chị bé nhỏ', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_10', name: 'Chồng bé nhỏ', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_11', name: 'Anh Liêm', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_12', name: 'Vợ anh Liêm', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_13', name: 'Lê Trường Hoài Ân', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_14', name: 'Vợ anh Ân', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_15', name: 'Con rơi 1', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_16', name: 'Con rơi 2', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_17', name: 'Anh Ti', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_18', name: 'Chánh thất anh Ti', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_19', name: 'Kế thất anh Ti', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_20', name: 'Bùi Hạ Vũ', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_21', name: 'Trần Nguyễn Kim cơ (con dâu)', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_22', name: 'Chị Bi', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_23', name: 'Anh cu Gà', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_24', name: 'Vợ cu gà', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_25', name: 'Lê Nguyễn Hải Ưu', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_26', name: 'Nguyễn Thị Ngọc Thắm (con dâu)', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_27', name: 'Lê Nguyễn Hải An', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_28', name: 'Nguyễn Thị Tịnh Nguyên (con dâu)', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_29', name: 'Lê Nguyễn Hải Uy', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_30', name: 'Nguyễn Khánh Ngọc (con dâu)', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_31', name: 'Lê Nguyễn Hải Đăng', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_32', name: 'Cao Trần Thanh Hòa (con dâu)', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_33', name: 'Lê Nguyễn An Khương', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_34', name: 'Lê Nguyễn Thiện Ngộ', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_35', name: 'Chị bé Thảo', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_36', name: 'Chồng chị Thảo (con rể)', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_37', name: 'Chị Vân', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_38', name: 'Chồng chị Vân (anh Vũ) (con rể)', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_39', name: 'Anh Duy', gender: 'Nam', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '4_40', name: 'Vợ anh Duy (con dâu)', gender: 'Nữ', generation: 4, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+
+            // --- THẾ HỆ 5 ---
+            { id: '5_1', name: 'Lê Đăng Khoa', gender: 'Nam', generation: 5, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '5_2', name: 'Lê Nguyễn Gia Linh', gender: 'Nữ', generation: 5, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '5_3', name: 'Lê Ngọc Diệp', gender: 'Nữ', generation: 5, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '5_4', name: 'Bé Ni', gender: 'Nữ', generation: 5, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '5_5', name: 'Con anh Ti 1', gender: 'Nam', generation: 5, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '5_6', name: 'Con anh Ti 2', gender: 'Nam', generation: 5, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' },
+            { id: '5_7', name: 'Con cu gà 1', gender: 'Nam', generation: 5, parentId: '', motherId: '', birthDay: '', birthMonth: '', birthYear: '', deathDay: '', deathMonth: '', deathYear: '', spouse: '', spouseBirthYear: '', spouseDeathYear: '', spouseHometown: '', spouseBurial: '', hometown: '', burial: '', avatar: '', note: '' }
         ];
 
         const defaultDataNgoai = [
-            { id: 'n1', name: 'Nguyễn Văn Đạo', gender: 'Nam', generation: 1, parentId: '', birthDay: '1', birthMonth: '1', birthYear: '1925', deathDay: '15', deathMonth: '8', deathYear: '2001', spouse: 'Trần Thị Mai', hometown: 'Nam Định', burial: 'Nghĩa trang xã', avatar: '', note: 'Cụ ông bên ngoại.' }
+            { 
+                id: 'n1', name: 'Nguyễn Văn Đạo', gender: 'Nam', generation: 1, parentId: '', motherId: '',
+                birthDay: '1', birthMonth: '1', birthYear: '1925', 
+                deathDay: '15', deathMonth: '8', deathYear: '2001', 
+                spouse: 'Trần Thị Mai', spouseBirthYear: '1928', spouseDeathYear: '2010', spouseHometown: 'Nam Định', spouseBurial: 'Nghĩa trang xã',
+                hometown: 'Nam Định', burial: 'Nghĩa trang xã', avatar: '', note: 'Cụ ông bên ngoại.' 
+            }
         ];
 
         function getStorageKey() {
@@ -242,20 +374,19 @@ g<!DOCTYPE html>
             const desc = document.getElementById('currentBranchDesc');
 
             if (branch === 'noi') {
-                btnNoi.className = "px-5 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow";
-                btnNgoai.className = "px-5 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white";
+                btnNoi.className = "px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow";
+                btnNgoai.className = "px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white";
                 title.textContent = "Gia phả Gia đình bên Nội (Họ Lê)";
                 desc.textContent = "Lưu giữ cội nguồn, gắn kết các thế hệ dòng họ Lê.";
             } else {
-                btnNgoai.className = "px-5 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow";
-                btnNoi.className = "px-5 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white";
+                btnNgoai.className = "px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 bg-amber-600 text-white shadow";
+                btnNoi.className = "px-4 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white";
                 title.textContent = "Gia phả Gia đình bên Ngoại (Họ Nguyễn)";
                 desc.textContent = "Lưu giữ cội nguồn, gắn kết các thế hệ dòng họ Nguyễn.";
             }
             renderTree();
         }
 
-        // Helper format ngày tháng
         function formatDateStr(day, month, year) {
             const parts = [];
             if (day) parts.push(`Ngày ${day}`);
@@ -295,12 +426,19 @@ g<!DOCTYPE html>
                     membersHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">`;
                     membersInGen.forEach(m => {
                         const isMale = m.gender === 'Nam';
-                        const isDeceased = (m.deathYear && m.deathYear.trim() !== '') || (m.deathDay && m.deathDay.trim() !== '') || (m.deathMonth && m.deathMonth.trim() !== '');
                         
-                        const parentObj = data.find(p => p.id === m.parentId);
-                        const parentName = parentObj ? parentObj.name : null;
+                        const isDeceased = Boolean(
+                            (m.deathYear && String(m.deathYear).trim() !== '') || 
+                            (m.deathDay && String(m.deathDay).trim() !== '') || 
+                            (m.deathMonth && String(m.deathMonth).trim() !== '')
+                        );
 
-                        // Theme màu sắc theo giới tính
+                        const fatherObj = data.find(p => p.id === m.parentId);
+                        const fatherName = fatherObj ? fatherObj.name : null;
+
+                        const motherObj = data.find(p => p.id === m.motherId);
+                        const motherName = motherObj ? motherObj.name : null;
+
                         const cardBorder = isMale 
                             ? 'border-sky-300 hover:border-sky-500 bg-sky-50/20' 
                             : 'border-pink-300 hover:border-pink-500 bg-pink-50/20';
@@ -310,21 +448,40 @@ g<!DOCTYPE html>
                         const badgeBg = isMale ? 'bg-sky-100 text-sky-700' : 'bg-pink-100 text-pink-700';
                         
                         const statusBadge = isDeceased 
-                            ? '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600"><i class="fas fa-cross mr-1"></i> Đã mất</span>' 
-                            : '<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700"><i class="fas fa-heartbeat mr-1"></i> Còn sống</span>';
+                            ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700"><i class="fas fa-cross mr-1"></i> Đã mất</span>' 
+                            : '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700"><i class="fas fa-heartbeat mr-1"></i> Còn sống</span>';
 
                         const avatarContent = m.avatar 
-                            ? `<img src="${m.avatar}" class="w-14 h-14 rounded-full object-cover border-2 ${isMale ? 'border-sky-400' : 'border-pink-400'} shrink-0 shadow-sm">`
+                            ? `<img src="${m.avatar}" class="w-14 h-14 rounded-full object-cover border-2 ${isMale ? 'border-sky-400' : 'border-pink-400'} shrink-0 shadow-sm" onerror="this.onerror=null;this.parentNode.innerHTML='<div class=\'w-14 h-14 rounded-full ${isMale ? 'bg-sky-100 text-sky-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center font-bold text-xl shrink-0 shadow-sm\'><i class=\'fas ${isMale ? 'fa-mars' : 'fa-venus'}\'></i></div>';">`
                             : `<div class="w-14 h-14 rounded-full ${isMale ? 'bg-sky-100 text-sky-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center font-bold text-xl shrink-0 shadow-sm">
                                    <i class="fas ${isMale ? 'fa-mars' : 'fa-venus'}"></i>
                                </div>`;
 
                         const birthStr = formatDateStr(m.birthDay, m.birthMonth, m.birthYear);
-                        const deathStr = isDeceased ? formatDateStr(m.deathDay, m.deathMonth, m.deathYear) : 'Nay';
-                        
-                        const giokhiText = (isDeceased && (m.deathDay || m.deathMonth)) 
-                            ? `<div class="flex items-center gap-1.5 font-semibold text-rose-600"><i class="fas fa-ribbon w-4"></i><span>Ngày giỗ kị: Ngày ${m.deathDay || '??'} tháng ${m.deathMonth || '??'} (ÂL/ĐL)</span></div>` 
-                            : '';
+                        const deathStr = isDeceased ? formatDateStr(m.deathDay, m.deathMonth, m.deathYear) : '---';
+
+                        const isSpouseDeceased = Boolean(m.spouseDeathYear && String(m.spouseDeathYear).trim() !== '');
+                        let spouseInfoHtml = '';
+                        if (m.spouse) {
+                            spouseInfoHtml = `
+                                <div class="mt-3 p-3 bg-amber-50/80 rounded-xl border border-amber-200/80 space-y-1.5 shadow-xs">
+                                    <div class="flex items-center justify-between border-b border-amber-200/50 pb-1.5">
+                                        <span class="font-bold text-amber-950 flex items-center gap-1.5 text-xs">
+                                            <i class="fas fa-ring text-rose-500"></i> Vợ/Chồng: ${m.spouse}
+                                        </span>
+                                        ${isSpouseDeceased 
+                                            ? '<span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-semibold"><i class="fas fa-cross mr-0.5"></i> Đã mất</span>' 
+                                            : '<span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-semibold"><i class="fas fa-heartbeat mr-0.5"></i> Còn sống</span>'}
+                                    </div>
+                                    <div class="text-[11px] text-slate-700 space-y-1">
+                                        ${m.spouseBirthYear ? `<div class="flex items-center gap-1"><i class="fas fa-cake-candles text-amber-700 w-3.5"></i><span>Năm sinh: <strong>${m.spouseBirthYear}</strong></span></div>` : ''}
+                                        ${isSpouseDeceased && m.spouseDeathYear ? `<div class="flex items-center gap-1"><i class="fas fa-calendar-xmark text-amber-700 w-3.5"></i><span>Năm mất: <strong>${m.spouseDeathYear}</strong></span></div>` : ''}
+                                        ${m.spouseHometown ? `<div class="flex items-center gap-1"><i class="fas fa-map-pin text-rose-500 w-3.5"></i><span>Nguyên quán: <strong>${m.spouseHometown}</strong></span></div>` : ''}
+                                        ${isSpouseDeceased && m.spouseBurial ? `<div class="flex items-center gap-1"><i class="fas fa-location-dot text-slate-600 w-3.5"></i><span>Nơi chôn cất: <strong>${m.spouseBurial}</strong></span></div>` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        }
 
                         membersHtml += `
                             <div class="rounded-2xl border ${cardBorder} p-5 shadow-sm transition-all relative group flex flex-col justify-between">
@@ -342,20 +499,24 @@ g<!DOCTYPE html>
                                         </div>
                                     </div>
 
-                                    <div class="space-y-1.5 text-xs ${textColor} border-t border-slate-100 pt-3 mt-3">
-                                        ${parentName ? `<div class="flex items-center gap-1.5"><i class="fas fa-user-shield ${iconColor} w-4"></i><span>Con của: <strong>${parentName}</strong></span></div>` : ''}
+                                    <div class="space-y-1.5 text-xs ${textColor} border-t border-slate-200/60 pt-3 mt-3">
+                                        <div class="flex items-center gap-1.5"><i class="fas fa-sitemap ${iconColor} w-4"></i><span>Thế hệ thứ: <strong>${m.generation}</strong></span></div>
+                                        ${fatherName ? `<div class="flex items-center gap-1.5"><i class="fas fa-user-tie ${iconColor} w-4"></i><span>Con của Cha: <strong>${fatherName}</strong></span></div>` : ''}
+                                        ${motherName ? `<div class="flex items-center gap-1.5"><i class="fas fa-user-nurse ${iconColor} w-4"></i><span>Con của Mẹ: <strong>${motherName}</strong></span></div>` : ''}
                                         <div class="flex items-center gap-1.5"><i class="fas fa-cake-candles ${iconColor} w-4"></i><span>Ngày sinh: <strong>${birthStr}</strong></span></div>
-                                        ${isDeceased ? `<div class="flex items-center gap-1.5"><i class="fas fa-calendar-xmark ${iconColor} w-4"></i><span>Năm mất: <strong>${deathStr}</strong></span></div>` : ''}
-                                        ${giokhiText}
-                                        ${m.spouse ? `<div class="flex items-center gap-1.5"><i class="fas fa-ring ${iconColor} w-4"></i><span>Vợ/Chồng: <strong>${m.spouse}</strong></span></div>` : ''}
-                                        ${m.hometown ? `<div class="flex items-center gap-1.5"><i class="fas fa-map-pin ${iconColor} w-4"></i><span>Nguyên quán: ${m.hometown}</span></div>` : ''}
-                                        ${isDeceased && m.burial ? `<div class="flex items-center gap-1.5"><i class="fas fa-location-dot ${iconColor} w-4"></i><span>Nơi chôn cất: ${m.burial}</span></div>` : ''}
-                                        ${m.note ? `<div class="mt-2 p-2.5 bg-amber-50/70 rounded-xl text-slate-700 italic border border-amber-100">"${m.note}"</div>` : ''}
+                                        ${isDeceased ? `<div class="flex items-center gap-1.5"><i class="fas fa-calendar-xmark ${iconColor} w-4"></i><span>Ngày mất (Giỗ kị): <strong>${deathStr}</strong></span></div>` : ''}
+                                        <div class="flex items-center gap-1.5"><i class="fas fa-map-pin ${iconColor} w-4"></i><span>Nguyên quán: <strong>${m.hometown || 'Chưa cập nhật'}</strong></span></div>
+                                        
+                                        ${isDeceased ? `<div class="flex items-center gap-1.5 font-semibold text-slate-700"><i class="fas fa-location-dot text-rose-600 w-4"></i><span>Nơi chôn cất: <strong>${m.burial || 'Chưa rõ'}</strong></span></div>` : ''}
+                                        
+                                        ${spouseInfoHtml}
+
+                                        ${m.note ? `<div class="mt-3 p-2.5 bg-white/90 rounded-xl text-slate-700 italic border border-slate-200 shadow-2xs">"${m.note}"</div>` : ''}
                                     </div>
                                 </div>
 
-                                <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
-                                    <button onclick="editMember('${m.id}')" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                                <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-200/60">
+                                    <button onclick="openModal('${m.id}')" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition flex items-center gap-1">
                                         <i class="fas fa-pen text-[10px]"></i> Sửa
                                     </button>
                                     <button onclick="deleteMember('${m.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-semibold transition flex items-center gap-1">
@@ -383,100 +544,123 @@ g<!DOCTYPE html>
             }
         }
 
-        // Modal Controls
+        // Modal Handlers
         function openModal(id = null) {
-            document.getElementById('memberModal').classList.remove('hidden');
-            document.getElementById('memberForm').reset();
+            const modal = document.getElementById('memberModal');
+            const form = document.getElementById('memberForm');
+            const title = document.getElementById('modalTitle');
+            
+            form.reset();
             document.getElementById('memberId').value = '';
             
+            const data = loadData();
+
             if (id) {
-                document.getElementById('modalTitle').textContent = 'Chỉnh sửa thông tin thành viên';
-                const data = loadData();
-                const m = data.find(item => item.id === id);
-                if (m) {
-                    document.getElementById('memberId').value = m.id;
-                    document.getElementById('memberName').value = m.name;
-                    document.getElementById('memberGender').value = m.gender;
-                    document.getElementById('memberGen').value = m.generation;
-                    updateParentOptions();
-                    document.getElementById('memberParent').value = m.parentId || '';
-                    document.getElementById('memberBirthDay').value = m.birthDay || '';
-                    document.getElementById('memberBirthMonth').value = m.birthMonth || '';
-                    document.getElementById('memberBirthYear').value = m.birthYear || '';
-                    document.getElementById('memberDeathDay').value = m.deathDay || '';
-                    document.getElementById('memberDeathMonth').value = m.deathMonth || '';
-                    document.getElementById('memberDeathYear').value = m.deathYear || '';
-                    document.getElementById('memberSpouse').value = m.spouse || '';
-                    document.getElementById('memberHometown').value = m.hometown || '';
-                    document.getElementById('memberBurial').value = m.burial || '';
-                    document.getElementById('memberAvatar').value = m.avatar || '';
-                    document.getElementById('memberNote').value = m.note || '';
+                title.textContent = 'Chỉnh sửa thông tin thành viên';
+                const member = data.find(m => m.id === id);
+                if (member) {
+                    document.getElementById('memberId').value = member.id;
+                    document.getElementById('memberName').value = member.name || '';
+                    document.getElementById('memberGender').value = member.gender || 'Nam';
+                    document.getElementById('memberGen').value = member.generation || 1;
+                    
+                    updateParentOptions(member.id, member.generation);
+                    document.getElementById('memberFather').value = member.parentId || '';
+                    document.getElementById('memberMother').value = member.motherId || '';
+                    
+                    document.getElementById('memberBirthDay').value = member.birthDay || '';
+                    document.getElementById('memberBirthMonth').value = member.birthMonth || '';
+                    document.getElementById('memberBirthYear').value = member.birthYear || '';
+                    
+                    document.getElementById('memberDeathDay').value = member.deathDay || '';
+                    document.getElementById('memberDeathMonth').value = member.deathMonth || '';
+                    document.getElementById('memberDeathYear').value = member.deathYear || '';
+                    
+                    document.getElementById('memberHometown').value = member.hometown || '';
+                    document.getElementById('memberBurial').value = member.burial || '';
+                    
+                    document.getElementById('memberSpouse').value = member.spouse || '';
+                    document.getElementById('spouseBirthYear').value = member.spouseBirthYear || '';
+                    document.getElementById('spouseDeathYear').value = member.spouseDeathYear || '';
+                    document.getElementById('spouseHometown').value = member.spouseHometown || '';
+                    document.getElementById('spouseBurial').value = member.spouseBurial || '';
+                    
+                    document.getElementById('memberAvatar').value = member.avatar || '';
+                    document.getElementById('memberNote').value = member.note || '';
                 }
             } else {
-                document.getElementById('modalTitle').textContent = 'Thêm thành viên mới';
+                title.textContent = 'Thêm thành viên mới';
                 updateParentOptions();
             }
+
+            modal.classList.remove('hidden');
         }
 
         function closeModal() {
             document.getElementById('memberModal').classList.add('hidden');
         }
 
-        function updateParentOptions() {
-            const gen = parseInt(document.getElementById('memberGen').value);
-            const parentSelect = document.getElementById('memberParent');
-            const currentId = document.getElementById('memberId').value;
+        function updateParentOptions(currentMemberId = null, currentGen = null) {
+            const genVal = parseInt(currentGen || document.getElementById('memberGen').value);
+            const fatherSelect = document.getElementById('memberFather');
+            const motherSelect = document.getElementById('memberMother');
+
+            fatherSelect.innerHTML = '<option value="">-- Chọn Cha (Thế hệ trước) --</option>';
+            motherSelect.innerHTML = '<option value="">-- Chọn Mẹ (Thế hệ trước) --</option>';
+
+            if (genVal <= 1) return;
+
             const data = loadData();
+            const prevGenMembers = data.filter(m => m.generation === genVal - 1);
 
-            parentSelect.innerHTML = '<option value="">-- Không chọn / Là gốc thế hệ --</option>';
-
-            if (gen > 1) {
-                const prevGenMembers = data.filter(m => m.generation === gen - 1 && m.id !== currentId);
-                prevGenMembers.forEach(m => {
+            prevGenMembers.forEach(p => {
+                if (p.id !== currentMemberId) {
                     const opt = document.createElement('option');
-                    opt.value = m.id;
-                    opt.textContent = `${m.name} (Thế hệ ${m.generation} - ${m.gender})`;
-                    parentSelect.appendChild(opt);
-                });
-            }
+                    opt.value = p.id;
+                    opt.textContent = `${p.name}`;
+                    
+                    if (p.gender === 'Nam') {
+                        fatherSelect.appendChild(opt);
+                    } else {
+                        motherSelect.appendChild(opt);
+                    }
+                }
+            });
         }
 
-        function saveMember(e) {
-            e.preventDefault();
+        function saveMember(event) {
+            event.preventDefault();
+            const data = loadData();
             const id = document.getElementById('memberId').value;
-            const name = document.getElementById('memberName').value;
-            const gender = document.getElementById('memberGender').value;
-            const generation = parseInt(document.getElementById('memberGen').value);
-            const parentId = document.getElementById('memberParent').value;
-            const birthDay = document.getElementById('memberBirthDay').value;
-            const birthMonth = document.getElementById('memberBirthMonth').value;
-            const birthYear = document.getElementById('memberBirthYear').value;
-            const deathDay = document.getElementById('memberDeathDay').value;
-            const deathMonth = document.getElementById('memberDeathMonth').value;
-            const deathYear = document.getElementById('memberDeathYear').value;
-            const spouse = document.getElementById('memberSpouse').value;
-            const hometown = document.getElementById('memberHometown').value;
-            const burial = document.getElementById('memberBurial').value;
-            const avatar = document.getElementById('memberAvatar').value;
-            const note = document.getElementById('memberNote').value;
 
-            let data = loadData();
+            const newMember = {
+                id: id || Date.now().toString(),
+                name: document.getElementById('memberName').value,
+                gender: document.getElementById('memberGender').value,
+                generation: parseInt(document.getElementById('memberGen').value),
+                parentId: document.getElementById('memberFather').value,
+                motherId: document.getElementById('memberMother').value,
+                birthDay: document.getElementById('memberBirthDay').value,
+                birthMonth: document.getElementById('memberBirthMonth').value,
+                birthYear: document.getElementById('memberBirthYear').value,
+                deathDay: document.getElementById('memberDeathDay').value,
+                deathMonth: document.getElementById('memberDeathMonth').value,
+                deathYear: document.getElementById('memberDeathYear').value,
+                hometown: document.getElementById('memberHometown').value,
+                burial: document.getElementById('memberBurial').value,
+                spouse: document.getElementById('memberSpouse').value,
+                spouseBirthYear: document.getElementById('spouseBirthYear').value,
+                spouseDeathYear: document.getElementById('spouseDeathYear').value,
+                spouseHometown: document.getElementById('spouseHometown').value,
+                spouseBurial: document.getElementById('spouseBurial').value,
+                avatar: document.getElementById('memberAvatar').value,
+                note: document.getElementById('memberNote').value
+            };
 
             if (id) {
-                data = data.map(item => item.id === id ? { 
-                    ...item, name, gender, generation, parentId, 
-                    birthDay, birthMonth, birthYear, 
-                    deathDay, deathMonth, deathYear, 
-                    spouse, hometown, burial, avatar, note 
-                } : item);
+                const index = data.findIndex(m => m.id === id);
+                if (index !== -1) data[index] = newMember;
             } else {
-                const newMember = {
-                    id: Date.now().toString(),
-                    name, gender, generation, parentId, 
-                    birthDay, birthMonth, birthYear, 
-                    deathDay, deathMonth, deathYear, 
-                    spouse, hometown, burial, avatar, note
-                };
                 data.push(newMember);
             }
 
@@ -485,37 +669,36 @@ g<!DOCTYPE html>
             renderTree();
         }
 
-        function editMember(id) {
-            openModal(id);
-        }
-
         function deleteMember(id) {
-            if (confirm('Bạn có chắc chắn muốn xóa thành viên này khỏi gia phả không?')) {
-                let data = loadData();
-                data = data.filter(item => item.id !== id);
-                saveData(data);
-                renderTree();
-            }
+            let data = loadData();
+            data = data.filter(m => m.id !== id);
+            saveData(data);
+            renderTree();
         }
 
-        function handleSearch() { renderTree(); }
-        function handleFilter() { renderTree(); }
+        function handleSearch() {
+            renderTree();
+        }
+
+        function handleFilter() {
+            renderTree();
+        }
 
         function exportData() {
             const data = loadData();
-            const jsonStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `gia_pha_${currentBranch}_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `giapha_${currentBranch}_${new Date().toISOString().slice(0, 10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         }
 
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -523,23 +706,18 @@ g<!DOCTYPE html>
                     if (Array.isArray(importedData)) {
                         saveData(importedData);
                         renderTree();
-                        alert('Nhập dữ liệu gia phả thành công!');
-                    } else {
-                        alert('Tệp dữ liệu không hợp lệ!');
                     }
                 } catch (err) {
-                    alert('Lỗi đọc tệp JSON!');
+                    console.error("Lỗi đọc file JSON", err);
                 }
             };
             reader.readAsText(file);
         }
 
         function resetDefaultData() {
-            if (confirm('Bạn có muốn khôi phục dữ liệu mẫu ban đầu của dòng họ này không? Các thay đổi hiện tại sẽ bị ghi đè.')) {
-                const initial = currentBranch === 'noi' ? defaultDataNoi : defaultDataNgoai;
-                localStorage.setItem(getStorageKey(), JSON.stringify(initial));
-                renderTree();
-            }
+            const initial = currentBranch === 'noi' ? defaultDataNoi : defaultDataNgoai;
+            saveData(initial);
+            renderTree();
         }
 
         window.onload = function() {
