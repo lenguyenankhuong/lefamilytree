@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gia Phả Dòng Tộc - Sơ Đồ Cây Gia Đình (Đa Hôn Nhân)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2canvas for Image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                            950: '#451a03',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Merriweather', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #faf7f2;
+            color: #2d3748;
+        }
+        .font-traditional {
+            font-family: 'Merriweather', serif;
+        }
+
+        /* Family Tree Styling */
+        .tree-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            user-select: none;
+            min-width: max-content;
+        }
+
+        .tree-gen-row {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            position: relative;
+            margin-bottom: 4rem;
+            width: max-content;
+        }
+
+        .tree-node {
+            transition: all 0.25s ease-in-out;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tree-node:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.18);
+        }
+
+        .tree-node.highlight-search {
+            animation: pulse-border 1.5s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.8); }
+            50% { border-color: #d97706; box-shadow: 0 0 35px rgba(217, 119, 6, 1); }
+        }
+
+        #tree-svg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-amber-50 shadow-xl border-b-4 border-amber-600">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start space-x-3 mb-1">
+                        <i class="fa-solid fa-tree text-amber-400 text-3xl sm:text-4xl"></i>
+                        <h1 class="font-traditional text-3xl sm:text-4xl font-extrabold tracking-wide text-amber-100">GIA PHẢ DÒNG TỘC</h1>
+                    </div>
+                    <p class="font-traditional italic text-amber-200/90 text-xs sm:text-sm mt-1">
+                        "Ghi chép và gìn giữ truyền thống gia tiên, kết nối các thế hệ mai sau!"
+                    </p>
+                </div>
+
+                <!-- Top Control Bar: Side selection & Status -->
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <div class="inline-flex rounded-xl p-1 bg-amber-950/80 border border-amber-700/60 shadow-inner">
+                        <button id="btn-side-noi" onclick="switchSide('noi')" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 bg-amber-600 text-white shadow">
+                            <i class="fa-solid fa-house-chimney text-xs"></i>
+                            <span>Bên Nội</span>
+                        </button>
+                        <button id="btn-side-ngoai" onclick="switchSide('ngoai')" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 text-amber-200 hover:text-white">
+                            <i class="fa-solid fa-house-user text-xs"></i>
+                            <span>Bên Ngoại</span>
+                        </button>
+                    </div>
+
+                    <div id="db-status" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-800 border border-amber-500 text-amber-100 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-amber-400"></i>
+                        <span id="db-status-text">Đang kết nối Database...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar & Tabs -->
+    <nav class="bg-amber-100/90 border-b border-amber-300 sticky top-0 z-30 backdrop-blur-md shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between py-2 gap-2">
+                <!-- Navigation Tabs -->
+                <div class="flex space-x-1 sm:space-x-2 overflow-x-auto">
+                    <button id="tab-btn-tree" onclick="switchTab('tree')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center space-x-2 bg-amber-800 text-white shadow-sm">
+                        <i class="fa-solid fa-diagram-project"></i>
+                        <span>Sơ đồ cây (Visual Tree)</span>
+                    </button>
+                    <button id="tab-btn-anniversary" onclick="switchTab('anniversary')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center space-x-2 text-amber-900 hover:bg-amber-200/70">
+                        <i class="fa-solid fa-calendar-days text-amber-700"></i>
+                        <span>Lịch Giỗ Tộc (Âm Lịch)</span>
+                    </button>
+                    <button id="tab-btn-manage" onclick="switchTab('manage')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center space-x-2 text-amber-900 hover:bg-amber-200/70">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>Quản lý & Điền thông tin</span>
+                    </button>
+                </div>
+
+                <!-- Tools -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="exportGEDCOM()" class="px-3 py-1.5 text-xs font-bold text-amber-950 bg-amber-200 hover:bg-amber-300 rounded-lg border border-amber-400 transition flex items-center space-x-1">
+                        <i class="fa-solid fa-file-export text-amber-800"></i>
+                        <span class="hidden sm:inline">Xuất GEDCOM</span>
+                    </button>
+                    <button onclick="exportTreeImage()" class="px-3 py-1.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-lg shadow transition flex items-center space-x-1">
+                        <i class="fa-solid fa-image"></i>
+                        <span class="hidden sm:inline">In / Xuất Ảnh</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: VISUAL TREE -->
+        <section id="tab-content-tree" class="space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-amber-200 shadow-sm space-y-3">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                    <div class="relative w-full md:w-96">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-amber-700">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <input type="text" id="tree-search-input" onkeyup="handleSmartSearch(event)" placeholder="Tìm tên, quê quán, vợ/chồng..." class="w-full pl-9 pr-24 py-2 border border-amber-300 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-amber-50/40">
+                        <button onclick="execSmartSearch()" class="absolute right-1 top-1 bottom-1 px-3 bg-amber-800 text-white rounded-lg text-xs font-bold hover:bg-amber-900 transition">
+                            Tìm kiếm
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                        <span class="text-xs font-bold text-amber-950 flex items-center gap-1">
+                            <i class="fa-solid fa-sitemap text-amber-700"></i>
+                            <span id="current-side-title" class="text-amber-900 font-extrabold">Bên Nội</span>
+                            <span id="total-members-count" class="ml-1 text-[11px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">(0 người)</span>
+                        </span>
+                        <div class="h-4 w-px bg-amber-300 mx-1"></div>
+                        <button onclick="zoomTree(0.1)" class="px-2.5 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300"><i class="fa-solid fa-plus"></i></button>
+                        <button onclick="zoomTree(-0.1)" class="px-2.5 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300"><i class="fa-solid fa-minus"></i></button>
+                        <button onclick="resetZoomTree()" class="px-2.5 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300"><i class="fa-solid fa-arrows-rotate"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tree-canvas-wrapper" class="bg-gradient-to-b from-amber-50/50 to-orange-50/30 rounded-2xl border-2 border-amber-300/80 shadow-inner min-h-[620px] overflow-auto relative cursor-grab active:cursor-grabbing">
+                <div id="tree-viewport" class="tree-container transition-transform origin-top duration-150">
+                    <svg id="tree-svg-canvas"></svg>
+                    <div id="tree-nodes-root" class="w-full flex flex-col items-center"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: LỊCH GIỖ -->
+        <section id="tab-content-anniversary" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-amber-200 shadow-sm space-y-4">
+                <h2 class="text-xl font-bold font-traditional text-amber-950 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-amber-700"></i>
+                    <span>Lịch Giỗ Tộc (Âm Lịch)</span>
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-amber-100/80 text-amber-950 font-bold uppercase text-[11px] border-b border-amber-200">
+                                <th class="p-3">Họ tên thành viên</th>
+                                <th class="p-3">Dòng tộc</th>
+                                <th class="p-3">Thế hệ</th>
+                                <th class="p-3">Ngày mất (Dương lịch)</th>
+                                <th class="p-3">Hành trạng / Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody id="anniversary-table-body" class="divide-y divide-amber-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: MANAGEMENT FORM -->
+        <section id="tab-content-manage" class="hidden space-y-6">
+            <div id="manage-form-container" class="bg-white rounded-2xl border border-amber-200 shadow-md overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-900 to-amber-950 px-6 py-4 text-white flex justify-between items-center">
+                    <h3 id="form-title" class="font-bold text-sm sm:text-base flex items-center space-x-2 font-traditional">
+                        <i class="fa-solid fa-user-plus text-amber-400"></i>
+                        <span>Thêm thành viên mới vào Gia Phả</span>
+                    </h3>
+                    <button id="btn-cancel-edit" onclick="resetForm()" class="hidden text-xs bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded-lg border border-amber-600 transition">
+                        Hủy chỉnh sửa
+                    </button>
+                </div>
+
+                <form id="member-form" onsubmit="handleFormSubmit(event)" class="p-6 space-y-6">
+                    <input type="hidden" id="member-id">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Dòng tộc <span class="text-red-500">*</span></label>
+                            <select id="form-side" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500" required>
+                                <option value="noi">Bên Nội</option>
+                                <option value="ngoai">Bên Ngoại</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Thế hệ (Đời thứ) <span class="text-red-500">*</span></label>
+                            <select id="form-gen" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500" required>
+                                <!-- Dynamic -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Chi / Nhánh ngành</label>
+                            <select id="form-branch" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                                <option value="chi1">Chi Trưởng (Ngành 1)</option>
+                                <option value="chi2">Chi Thứ 2 (Ngành 2)</option>
+                                <option value="chi3">Chi Thứ 3 (Ngành 3)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Họ và tên <span class="text-red-500">*</span></label>
+                            <input type="text" id="form-name" required placeholder="Nhập đầy đủ họ và tên..." class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Biệt danh / Tên tự</label>
+                            <input type="text" id="form-nickname" placeholder="VD: Tên thường gọi..." class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Giới tính <span class="text-red-500">*</span></label>
+                            <select id="form-gender" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500" required>
+                                <option value="nam">Nam</option>
+                                <option value="nu">Nữ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Ngày / Năm sinh</label>
+                            <input type="text" id="form-birth" placeholder="VD: 15/08/1960" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Ngày / Năm mất (Dương lịch)</label>
+                            <input type="text" id="form-death" placeholder="VD: 20/03/2020 (Trống = Còn sống)" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-950 uppercase mb-1">Quê quán</label>
+                            <input type="text" id="form-hometown" placeholder="VD: Nam Định..." class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- Parents Link -->
+                    <div class="border-t border-amber-200 pt-4">
+                        <h4 class="text-xs font-bold text-amber-950 uppercase mb-3 flex items-center gap-1">
+                            <i class="fa-solid fa-dna text-amber-700"></i> Liên kết Cha / Mẹ đẻ
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Cha</label>
+                                <select id="form-father" onchange="updateMotherOptions()" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                                    <option value="">-- Không chọn / Là gốc --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Mẹ đẻ</label>
+                                <select id="form-mother" class="w-full text-xs border-amber-300 rounded-xl p-2.5 border focus:ring-amber-500">
+                                    <option value="">-- Chọn Cha trước --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multiple Spouses -->
+                    <div class="border-t border-amber-200 pt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs font-bold text-amber-950 uppercase flex items-center gap-1">
+                                <i class="fa-solid fa-heart text-pink-600"></i> Danh sách Vợ / Chồng
+                            </h4>
+                            <button type="button" onclick="addSpouseField()" class="px-3 py-1 bg-amber-800 text-white rounded-lg text-xs font-bold hover:bg-amber-900 transition flex items-center space-x-1">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>Thêm Vợ/Chồng</span>
+                            </button>
+                        </div>
+                        <div id="spouses-container" class="space-y-3"></div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-amber-200">
+                        <button type="button" onclick="resetForm()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-xs rounded-xl transition">Làm mới</button>
+                        <button type="submit" class="px-6 py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs rounded-xl shadow transition flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Lưu dữ liệu lên Mây</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Members List -->
+            <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 overflow-x-auto">
+                <h4 class="text-sm font-bold text-amber-950 uppercase mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-amber-700"></i> Danh sách toàn bộ thành viên trong CSDL
+                </h4>
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-amber-100/80 text-amber-950 font-bold uppercase text-[11px] border-b border-amber-200">
+                            <th class="p-3">Họ tên</th>
+                            <th class="p-3">Dòng tộc</th>
+                            <th class="p-3">Thế hệ</th>
+                            <th class="p-3">Giới tính</th>
+                            <th class="p-3">Vợ / Chồng</th>
+                            <th class="p-3 text-right">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manage-table-body" class="divide-y divide-amber-100"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Details -->
+    <div id="member-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border-2 border-amber-300 space-y-4 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-amber-900 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <div id="modal-content" class="space-y-3 text-xs"></div>
+        </div>
+    </div>
+
+    <!-- Script Logic Integration -->
+    <script>
+        // --- THÔNG TIN SUPABASE ĐÃ ĐƯỢC CHÈN SẴN ---
+        const SUPABASE_URL = 'https://uynvfqejhyzxsywzwym.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_IMDgXC8g1f3SKCgxSIX6Jw_PHdF_VvH';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let familyData = [];
+        let currentSide = 'noi';
+        let currentTab = 'tree';
+        let scaleZoom = 1;
+
+        window.onload = function() {
+            initGenSelects();
+            loadFamilyDataFromSupabase();
+        };
+
+        // --- HÀM TẢI & ĐỒNG BỘ DỮ LIỆU SUPABASE ---
+        async function loadFamilyDataFromSupabase() {
+            const statusText = document.getElementById('db-status-text');
+            try {
+                const { data, error } = await supabase.from('members').select('*');
+                if (error) throw error;
+
+                familyData = data.map(row => row.data);
+                
+                // Khởi tạo dữ liệu gốc nếu database hoàn toàn trống
+                if (familyData.length === 0) {
+                    const defaultMember = { id: "m1", side: "noi", gen: 1, branch: "chi1", name: "Lê Anh Tuấn", nickname: "Cụ Tổ", gender: "nam", birth: "1935", death: "12/05/2010", hometown: "Nam Định", spouses: ["Nguyễn Thị Hạnh"], childrenNote: "Gia đình đông con cháu" };
+                    familyData = [defaultMember];
+                    await saveMemberToSupabase(defaultMember);
+                }
+
+                statusText.innerText = "Đã kết nối Database";
+                document.getElementById('db-status').className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-green-800 border border-green-500 text-green-100 flex items-center gap-2";
+                renderAll();
+            } catch (err) {
+                console.error("Lỗi Supabase:", err);
+                statusText.innerText = "Lỗi kết nối CSDL!";
+                document.getElementById('db-status').className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-red-800 border border-red-500 text-red-100 flex items-center gap-2";
+            }
+        }
+
+        async function saveMemberToSupabase(memberObj) {
+            const { error } = await supabase
+                .from('members')
+                .upsert({ id: memberObj.id, data: memberObj });
+            if (error) console.error('Lỗi khi lưu lên Supabase:', error);
+        }
+
+        async function deleteMemberFromSupabase(id) {
+            const { error } = await supabase
+                .from('members')
+                .delete()
+                .eq('id', id);
+            if (error) console.error('Lỗi khi xóa từ Supabase:', error);
+        }
+
+        // --- GIAO DIỆN & RENDER ---
+        function switchSide(side) {
+            currentSide = side;
+            document.getElementById('btn-side-noi').className = side === 'noi' ? 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 bg-amber-600 text-white shadow' : 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 text-amber-200 hover:text-white';
+            document.getElementById('btn-side-ngoai').className = side === 'ngoai' ? 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 bg-amber-600 text-white shadow' : 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 text-amber-200 hover:text-white';
+            document.getElementById('
