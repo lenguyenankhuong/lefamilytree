@@ -400,29 +400,36 @@
             loadFamilyDataFromSupabase();
         };
 
-        // --- HÀM TẢI & ĐỒNG BỘ DỮ LIỆU SUPABASE ---
+        // --- HÀM TẢI & ĐỒNG BỘ DỮ LIỆU SUPABASE (CÓ FALLBACK CHỐNG TREO) ---
         async function loadFamilyDataFromSupabase() {
             const statusText = document.getElementById('db-status-text');
+            
+            // Dữ liệu mẫu dự phòng hiển thị ngay lập tức không cần chờ mạng
+            familyData = [
+                { id: "m1", side: "noi", gen: 1, branch: "chi1", name: "Lê Anh Tuấn", nickname: "Cụ Tổ", gender: "nam", birth: "1935", death: "12/05/2010", hometown: "Nam Định", spouses: ["Nguyễn Thị Hạnh"], childrenNote: "Gia đình đông con cháu" }
+            ];
+            renderAll();
+
             try {
-                const { data, error } = await supabase.from('members').select('*');
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 6000));
+                const fetchPromise = supabase.from('members').select('*');
+                const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+
                 if (error) throw error;
 
-                familyData = data.map(row => row.data);
-                
-                // Khởi tạo dữ liệu gốc nếu database hoàn toàn trống
-                if (familyData.length === 0) {
-                    const defaultMember = { id: "m1", side: "noi", gen: 1, branch: "chi1", name: "Lê Anh Tuấn", nickname: "Cụ Tổ", gender: "nam", birth: "1935", death: "12/05/2010", hometown: "Nam Định", spouses: ["Nguyễn Thị Hạnh"], childrenNote: "Gia đình đông con cháu" };
-                    familyData = [defaultMember];
-                    await saveMemberToSupabase(defaultMember);
+                if (data && data.length > 0) {
+                    familyData = data.map(row => row.data);
+                    renderAll();
+                } else {
+                    await saveMemberToSupabase(familyData[0]);
                 }
 
                 statusText.innerText = "Đã kết nối Database";
                 document.getElementById('db-status').className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-green-800 border border-green-500 text-green-100 flex items-center gap-2";
-                renderAll();
             } catch (err) {
-                console.error("Lỗi Supabase:", err);
-                statusText.innerText = "Lỗi kết nối CSDL!";
-                document.getElementById('db-status').className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-red-800 border border-red-500 text-red-100 flex items-center gap-2";
+                console.warn("Dùng chế độ ngoại tuyến do mạng chậm:", err);
+                statusText.innerText = "Chế độ ngoại tuyến (Offline)";
+                document.getElementById('db-status').className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-orange-800 border border-orange-500 text-orange-100 flex items-center gap-2";
             }
         }
 
@@ -446,4 +453,407 @@
             currentSide = side;
             document.getElementById('btn-side-noi').className = side === 'noi' ? 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 bg-amber-600 text-white shadow' : 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 text-amber-200 hover:text-white';
             document.getElementById('btn-side-ngoai').className = side === 'ngoai' ? 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 bg-amber-600 text-white shadow' : 'px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 flex items-center space-x-2 text-amber-200 hover:text-white';
-            document.getElementById('
+            document.getElementById('current-side-title').innerText = side === 'noi' ? 'Bên Nội' : 'Bên Ngoại';
+            renderAll();
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            ['tree', 'anniversary', 'manage'].forEach(t => {
+                document.getElementById(`tab-content-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center space-x-2 text-amber-900 hover:bg-amber-200/70';
+            });
+            document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabId}`).className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center space-x-2 bg-amber-800 text-white shadow-sm';
+            
+            if(tabId === 'tree') renderTreeNodes();
+            if(tabId === 'anniversary') renderAnniversaryCalendar();
+            if(tabId === 'manage') renderManageTable();
+        }
+
+        function initGenSelects() {
+            const genSelect = document.getElementById('form-gen');
+            genSelect.innerHTML = '';
+            for(let i=1; i<=10; i++) {
+                genSelect.innerHTML += `<option value="${i}">Đời thứ ${i}</option>`;
+            }
+        }
+
+        function renderAll() {
+            renderTreeNodes();
+            renderAnniversaryCalendar();
+            renderManageTable();
+            updateParentDropdowns();
+        }
+
+        function addSpouseField(spouseName = '') {
+            const container = document.getElementById('spouses-container');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2 spouse-row';
+            
+            let memberOptions = '<option value="">-- Nhập tên mới hoặc chọn thành viên --</option>';
+            familyData.forEach(m => {
+                const selected = m.name === spouseName ? 'selected' : '';
+                memberOptions += `<option value="${m.name}" ${selected}>${m.name} (Đời ${m.gen})</option>`;
+            });
+
+            div.innerHTML = `
+                <select class="spouse-select w-1/2 text-xs border-amber-300 rounded-xl p-2 border focus:ring-amber-500 bg-white" onchange="syncSpouseInput(this)">
+                    ${memberOptions}
+                </select>
+                <input type="text" class="spouse-name-input w-1/2 text-xs border-amber-300 rounded-xl p-2 border focus:ring-amber-500" placeholder="Tên Vợ/Chồng..." value="${spouseName}">
+                <button type="button" onclick="this.parentElement.remove(); updateParentDropdowns();" class="px-2.5 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-xl font-bold text-xs"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+            updateParentDropdowns();
+        }
+
+        function syncSpouseInput(selectElem) {
+            const inputElem = selectElem.nextElementSibling;
+            if (selectElem.value) inputElem.value = selectElem.value;
+            updateParentDropdowns();
+        }
+
+        function updateParentDropdowns() {
+            const fatherSelect = document.getElementById('form-father');
+            const motherSelect = document.getElementById('form-mother');
+            
+            const currentFatherId = fatherSelect.value;
+            const currentMotherVal = motherSelect.value;
+
+            fatherSelect.innerHTML = '<option value="">-- Không chọn / Là gốc --</option>';
+            familyData.forEach(m => {
+                if(m.gender === 'nam' && m.side === currentSide) {
+                    fatherSelect.innerHTML += `<option value="${m.id}" ${m.id === currentFatherId ? 'selected' : ''}>${m.name} (Đời ${m.gen})</option>`;
+                }
+            });
+
+            motherSelect.innerHTML = '<option value="">-- Chọn Mẹ đẻ --</option>';
+            if(currentFatherId) {
+                const fatherObj = familyData.find(m => m.id === currentFatherId);
+                if(fatherObj && fatherObj.spouses) {
+                    fatherObj.spouses.forEach(spouse => {
+                        const sName = typeof spouse === 'string' ? spouse : spouse.name;
+                        motherSelect.innerHTML += `<option value="${sName}" ${sName === currentMotherVal ? 'selected' : ''}>${sName} (Vợ của Cha)</option>`;
+                    });
+                }
+            }
+            familyData.forEach(m => {
+                if(m.gender === 'nu') {
+                    motherSelect.innerHTML += `<option value="${m.name}" ${m.name === currentMotherVal ? 'selected' : ''}>${m.name} (Thành viên nữ)</option>`;
+                }
+            });
+        }
+
+        function renderTreeNodes() {
+            const rootContainer = document.getElementById('tree-nodes-root');
+            rootContainer.innerHTML = '';
+
+            const filteredData = familyData.filter(m => m.side === currentSide);
+            document.getElementById('total-members-count').innerText = `(${filteredData.length} người)`;
+
+            if(filteredData.length === 0) {
+                rootContainer.innerHTML = `<div class="p-8 text-center text-amber-800 italic">Chưa có thành viên nào. Hãy vào tab Quản lý để thêm mới.</div>`;
+                document.getElementById('tree-svg-canvas').innerHTML = '';
+                return;
+            }
+
+            const gens = {};
+            filteredData.forEach(m => {
+                if(!gens[m.gen]) gens[m.gen] = [];
+                gens[m.gen].push(m);
+            });
+
+            const sortedGens = Object.keys(gens).sort((a,b) => a - b);
+            
+            sortedGens.forEach(gen => {
+                const genRow = document.createElement('div');
+                genRow.className = 'tree-gen-row';
+                
+                gens[gen].forEach(m => {
+                    const nodeEl = document.createElement('div');
+                    nodeEl.className = 'tree-node bg-white border-2 border-amber-300 rounded-2xl p-4 shadow-md w-60 text-center relative';
+                    nodeEl.setAttribute('id', `node-${m.id}`);
+                    nodeEl.onclick = () => showMemberModal(m.id);
+
+                    const isDeceased = m.death && m.death.trim() !== '';
+                    const genderColor = m.gender === 'nam' ? 'bg-blue-50 text-blue-900 border-blue-200' : 'bg-pink-50 text-pink-900 border-pink-200';
+                    
+                    let spousesHtml = '';
+                    if(m.spouses && m.spouses.length > 0) {
+                        spousesHtml = `<div class="mt-2 pt-2 border-t border-amber-100 text-[11px] text-pink-800 font-semibold text-left">
+                            <i class="fa-solid fa-heart text-pink-600 mr-1"></i>Vợ/Chồng:
+                            <ul class="list-disc list-inside pl-1 text-gray-700">`;
+                        m.spouses.forEach((sp, idx) => {
+                            const spName = typeof sp === 'string' ? sp : sp.name;
+                            spousesHtml += `<li>Vợ ${idx+1}: <b>${spName}</b></li>`;
+                        });
+                        spousesHtml += `</ul></div>`;
+                    }
+
+                    nodeEl.innerHTML = `
+                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${genderColor} border shadow-sm">
+                            Đời ${m.gen}
+                        </div>
+                        <div class="mt-2 font-bold text-amber-950 text-sm truncate">${m.name}</div>
+                        ${m.nickname ? `<div class="text-[11px] italic text-amber-700">"${m.nickname}"</div>` : ''}
+                        <div class="text-[11px] text-gray-600 mt-1">
+                            ${m.birth ? m.birth : '?'}&nbsp;–&nbsp;${isDeceased ? m.death : '<span class="text-green-600 font-semibold">Còn sống</span>'}
+                        </div>
+                        ${spousesHtml}
+                    `;
+                    genRow.appendChild(nodeEl);
+                });
+                rootContainer.appendChild(genRow);
+            });
+
+            setTimeout(drawSvgConnections, 50);
+        }
+
+        function drawSvgConnections() {
+            const svg = document.getElementById('tree-svg-canvas');
+            const wrapper = document.getElementById('tree-canvas-wrapper');
+            svg.innerHTML = '';
+
+            svg.setAttribute('width', wrapper.scrollWidth);
+            svg.setAttribute('height', wrapper.scrollHeight);
+
+            const wrapperRect = wrapper.getBoundingClientRect();
+
+            familyData.forEach(child => {
+                if(child.father) {
+                    const fatherEl = document.getElementById(`node-${child.father}`);
+                    const childEl = document.getElementById(`node-${child.id}`);
+
+                    if(fatherEl && childEl) {
+                        const fRect = fatherEl.getBoundingClientRect();
+                        const cRect = childEl.getBoundingClientRect();
+
+                        const x1 = fRect.left + fRect.width / 2 - wrapperRect.left + wrapper.scrollLeft;
+                        const y1 = fRect.top + fRect.height - wrapperRect.top + wrapper.scrollTop;
+                        const x2 = cRect.left + cRect.width / 2 - wrapperRect.left + wrapper.scrollLeft;
+                        const y2 = cRect.top - wrapperRect.top + wrapper.scrollTop;
+
+                        const midY = (y1 + y2) / 2;
+
+                        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        path.setAttribute("d", `M ${x1} ${y1} V ${midY} H ${x2} V ${y2}`);
+                        path.setAttribute("stroke", "#d97706");
+                        path.setAttribute("stroke-width", "2");
+                        path.setAttribute("fill", "none");
+                        path.setAttribute("stroke-dasharray", "4,4");
+                        svg.appendChild(path);
+                    }
+                }
+            });
+        }
+
+        function renderAnniversaryCalendar() {
+            const tbody = document.getElementById('anniversary-table-body');
+            tbody.innerHTML = '';
+            const deceasedMembers = familyData.filter(m => m.death && m.death.trim() !== '');
+
+            if(deceasedMembers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500 italic">Chưa có dữ liệu thành viên đã khuất.</td></tr>`;
+                return;
+            }
+
+            deceasedMembers.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-amber-50/60 transition';
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-amber-950">${m.name} ${m.nickname ? `("${m.nickname}")` : ''}</td>
+                    <td class="p-3 uppercase font-semibold text-amber-800">${m.side === 'noi' ? 'Bên Nội' : 'Bên Ngoại'}</td>
+                    <td class="p-3">Đời ${m.gen}</td>
+                    <td class="p-3 font-bold text-red-700">${m.death}</td>
+                    <td class="p-3 text-gray-600">${m.childrenNote || 'Ngày giỗ gia tiên'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderManageTable() {
+            const tbody = document.getElementById('manage-table-body');
+            tbody.innerHTML = '';
+
+            familyData.forEach(m => {
+                const spousesStr = m.spouses && m.spouses.length > 0 ? m.spouses.join(', ') : 'Chưa có';
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-amber-50/60 transition';
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-amber-950">${m.name}</td>
+                    <td class="p-3">${m.side === 'noi' ? 'Bên Nội' : 'Bên Ngoại'}</td>
+                    <td class="p-3">Đời ${m.gen}</td>
+                    <td class="p-3">${m.gender === 'nam' ? 'Nam' : 'Nữ'}</td>
+                    <td class="p-3 text-pink-800 font-medium">${spousesStr}</td>
+                    <td class="p-3 text-right space-x-2">
+                        <button onclick="editMember('${m.id}')" class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteMember('${m.id}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('member-id').value || 'm_' + Date.now();
+            const side = document.getElementById('form-side').value;
+            const gen = parseInt(document.getElementById('form-gen').value);
+            const branch = document.getElementById('form-branch').value;
+            const name = document.getElementById('form-name').value;
+            const nickname = document.getElementById('form-nickname').value;
+            const gender = document.getElementById('form-gender').value;
+            const birth = document.getElementById('form-birth').value;
+            const death = document.getElementById('form-death').value;
+            const hometown = document.getElementById('form-hometown').value;
+            const father = document.getElementById('form-father').value;
+            const mother = document.getElementById('form-mother').value;
+
+            let spouses = [];
+            document.querySelectorAll('.spouse-name-input').forEach(input => {
+                if(input.value.trim() !== '') spouses.push(input.value.trim());
+            });
+
+            const memberObj = { id, side, gen, branch, name, nickname, gender, birth, death, hometown, father, mother, spouses };
+
+            const index = familyData.findIndex(m => m.id === id);
+            if(index >= 0) familyData[index] = memberObj;
+            else familyData.push(memberObj);
+
+            await saveMemberToSupabase(memberObj);
+
+            resetForm();
+            renderAll();
+            switchTab('tree');
+            alert('Đã lưu dữ liệu thành công lên Database!');
+        }
+
+        function editMember(id) {
+            const m = familyData.find(item => item.id === id);
+            if(!m) return;
+
+            document.getElementById('member-id').value = m.id;
+            document.getElementById('form-side').value = m.side;
+            document.getElementById('form-gen').value = m.gen;
+            document.getElementById('form-branch').value = m.branch || 'chi1';
+            document.getElementById('form-name').value = m.name;
+            document.getElementById('form-nickname').value = m.nickname || '';
+            document.getElementById('form-gender').value = m.gender;
+            document.getElementById('form-birth').value = m.birth || '';
+            document.getElementById('form-death').value = m.death || '';
+            document.getElementById('form-hometown').value = m.hometown || '';
+            
+            updateParentDropdowns();
+            document.getElementById('form-father').value = m.father || '';
+            updateParentDropdowns();
+            document.getElementById('form-mother').value = m.mother || '';
+
+            document.getElementById('spouses-container').innerHTML = '';
+            if(m.spouses) {
+                m.spouses.forEach(sp => addSpouseField(typeof sp === 'string' ? sp : sp.name));
+            }
+
+            document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-user-pen text-amber-400"></i><span>Chỉnh sửa: ${m.name}</span>`;
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+            switchTab('manage');
+        }
+
+        async function deleteMember(id) {
+            if(confirm('Bạn có chắc chắn muốn xóa thành viên này khỏi Database?')) {
+                familyData = familyData.filter(m => m.id !== id);
+                await deleteMemberFromSupabase(id);
+                renderAll();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('member-form').reset();
+            document.getElementById('member-id').value = '';
+            document.getElementById('spouses-container').innerHTML = '';
+            document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-user-plus text-amber-400"></i><span>Thêm thành viên mới vào Gia Phả</span>`;
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+            updateParentDropdowns();
+        }
+
+        function showMemberModal(id) {
+            const m = familyData.find(item => item.id === id);
+            if(!m) return;
+            const spousesStr = m.spouses && m.spouses.length > 0 ? m.spouses.join(', ') : 'Chưa có';
+            
+            document.getElementById('modal-content').innerHTML = `
+                <div class="text-center pb-3 border-b border-amber-200">
+                    <h3 class="font-bold text-lg text-amber-950">${m.name}</h3>
+                    <p class="text-xs text-amber-700 italic">"${m.nickname || 'Thành viên gia phả'}"</p>
+                </div>
+                <div class="space-y-2 text-xs text-gray-700 pt-2">
+                    <p><b>Dòng tộc:</b> ${m.side === 'noi' ? 'Bên Nội' : 'Bên Ngoại'} (Đời thứ ${m.gen})</p>
+                    <p><b>Giới tính:</b> ${m.gender === 'nam' ? 'Nam' : 'Nữ'}</p>
+                    <p><b>Ngày sinh:</b> ${m.birth || 'Không rõ'}</p>
+                    <p><b>Ngày mất:</b> ${m.death || 'Còn sống'}</p>
+                    <p><b>Quê quán:</b> ${m.hometown || 'Không rõ'}</p>
+                    <p><b>Vợ / Chồng:</b> ${spousesStr}</p>
+                </div>
+            `;
+            document.getElementById('member-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('member-modal').classList.add('hidden');
+        }
+
+        function zoomTree(delta) {
+            scaleZoom = Math.max(0.5, Math.min(1.8, scaleZoom + delta));
+            document.getElementById('tree-viewport').style.transform = `scale(${scaleZoom})`;
+        }
+
+        function resetZoomTree() {
+            scaleZoom = 1;
+            document.getElementById('tree-viewport').style.transform = `scale(1)`;
+        }
+
+        function handleSmartSearch(e) {
+            if(e.key === 'Enter') execSmartSearch();
+        }
+
+        function execSmartSearch() {
+            const keyword = document.getElementById('tree-search-input').value.toLowerCase().trim();
+            if(!keyword) return;
+            const found = familyData.find(m => m.name.toLowerCase().includes(keyword));
+            if(found) {
+                switchTab('tree');
+                const nodeEl = document.getElementById(`node-${found.id}`);
+                if(nodeEl) {
+                    nodeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    nodeEl.classList.add('highlight-search');
+                    setTimeout(() => nodeEl.classList.remove('highlight-search'), 3000);
+                }
+            } else alert('Không tìm thấy thành viên!');
+        }
+
+        function exportGEDCOM() {
+            let ged = "0 HEAD\n1 SOUR FamilyTreeApp\n1 GEDC\n2 VERS 5.5.1\n";
+            familyData.forEach(m => {
+                ged += `0 @I${m.id}@ INDI\n1 NAME ${m.name}\n1 SEX ${m.gender === 'nam' ? 'M' : 'F'}\n`;
+            });
+            ged += "0 TRLR";
+            const blob = new Blob([ged], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'giapha.ged';
+            a.click();
+        }
+
+        function exportTreeImage() {
+            html2canvas(document.getElementById('tree-viewport'), { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'so-do-gia-pha.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
